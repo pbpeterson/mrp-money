@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import Modal from "react-modal";
 import { useTransactions } from "../../hooks/useTransactions";
 
@@ -19,7 +19,7 @@ export function NewTransactionModal({isOpen, onRequestClose}: NewTransactionModa
   const { createTransaction } = useTransactions();
 
   const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [type, setType] = useState('deposit')
 
@@ -28,17 +28,25 @@ export function NewTransactionModal({isOpen, onRequestClose}: NewTransactionModa
     
     await createTransaction({
       title,
-      amount,
+      amount: Number(amount),
       category,
       type
     })
 
     setTitle('');
-    setAmount(0);
+    setAmount('');
     setCategory('');
     setType('deposit');
     onRequestClose();
   }
+
+  const handleAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const numberInput = Number(event.target.value)
+    if(!isNaN(numberInput)) {
+      setAmount(event.target.value)
+    }
+  }
+
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} overlayClassName="react-modal-overlay" className="react-modal-content">
@@ -51,7 +59,7 @@ export function NewTransactionModal({isOpen, onRequestClose}: NewTransactionModa
 
       <h2>Cadastrar Transação</h2>
       <input placeholder="Título" value={title} onChange={event => setTitle(event.target.value)} />
-      <input placeholder="Valor" type="number" value={amount} onChange={event => setAmount(+event.target.value)} />
+      <input placeholder="Valor" type="text" value={amount} onChange={handleAmount} />
 
       <TransactionTypeContainer>
 
